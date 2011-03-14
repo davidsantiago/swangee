@@ -22,15 +22,19 @@
   (step [this ^Configuration config]
         "Takes FA and a Configuration, yield the next Configuration."))
 
+(defprotocol ComposableAutomaton
+  "Automata that implement this protocol are cable of performing the following
+   operations (that is, returning a new automaton that has new but related
+   behavior). This is useful for building up complex automata out of simple ones."
+  (complement [this]
+    "Given a FiniteAutomaton, return a FiniteAutomaton that is its complement."))
+
 ;; Main difference between DFA and NFA is the state concept. A DFA uses
-;; singletone states, an NFA uses sets for states.
+;; singleton states, an NFA uses sets for states.
 ;; Transition function. NFA: T : Q x E -> P(Q)  (singleton or collection)
 ;;                      DFA: T : Q x E -> Q
 ;; Initial state. NFA: I = #{x,...}
 ;;                DFA: I = x
-;; Note: A transition function is curried; it's a function of just the state,
-;; returning a function of just the input symbol. This makes it easier to
-;; generalize between functions you want to write, and nested maps.
 
 ;; For an NFA:
 ;;   Transition function (Q -> (E -> P(Q))). Can return a state or
@@ -58,7 +62,16 @@
                                                (as-coll
                                                 ((or (f s)
                                                      (constantly nil)) (first input))))))
-                        (rest input))))
+                        (rest input)))
+
+  ComposableAutomaton
+  (complement [this] (NFA. (:states this)
+                           (:transitions this)
+                           (:initial-state this)
+                           ;; Next line is key: Turn all non-accepting states into
+                           ;; accepting states and vice versa.
+                           (set/difference (:states this)
+                                           (:accepting-states this)))))
 
 (defn nfa
   "Takes arguments for states, transitions, and initial state to construct
@@ -135,5 +148,24 @@
 (defn match
   "Given a FiniteAutomaton and an input sequence, return the longest string matched
    starting on the first character of the string."
-  [fa input]
-  )
+  [^FiniteAutomaton fa input]
+  (loop [curr-cfg (config (initial-state fa)
+                          input)
+         symbols-seen [(first input)]
+         longest-match []]
+    (let [next-cfg (step fa curr-cfg)]
+      (if (not (valid-state? fa (:state next-cfg))) ;; No route to acceptance...
+        longest-match
+        (if (empty? (:input next-cfg)) ;; Out of input, return depends on state.
+          (if (accepting-state? fa (:state next-cfg)) ;; If we are in accepting state,
+            (conj longest-match (first (:input curr-cfg))) ;; Add last input we saw and return.
+            ;; Otherwise, we are out of input but not in accepting, state...
+            longest-match)
+          ;; Not out of input, so continue...
+          (recur next-cfg
+                 (conj symbols-seen (first (:input next-cfg)))
+                 ;; Only set longest-match to symbols seen if we're in accepting state.
+                 (if (accepting-state? fa (:state next-cfg))
+                   symbols-seen
+                   longest-match)))))))
+
