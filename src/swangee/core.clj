@@ -1,4 +1,5 @@
 (ns swangee.core
+  (:refer-clojure :exclude [complement])
   (:require [clojure.set :as set])
   (:use swangee.utils))
 
