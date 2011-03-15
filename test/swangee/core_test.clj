@@ -2,6 +2,31 @@
   (:use clojure.test)
   (:require [swangee.core :as swangee]))
 
+;; Test the espilon-closure function.
+
+(def transitions-with-eps {:a {\b :b
+                               nil :b}
+                           :b {\d :d
+                               \c :c
+                               nil #{:c}}
+                           :c {}
+                           :d {nil #{:b :c}}})
+
+(deftest epsilon-closure
+  (is (= #{:a :b :c}
+         (swangee/epsilon-closure transitions-with-eps
+                                  #{:a})))
+  (is (= #{:b :c}
+         (swangee/epsilon-closure transitions-with-eps
+                                  #{:b})))
+  (is (= #{:c}
+         (swangee/epsilon-closure transitions-with-eps
+                                  #{:c})))
+  (is (= #{:b :c :d}
+         (swangee/epsilon-closure transitions-with-eps
+                                  #{:d}))))
+
+
 ;; For these tests, we use the simple language defined by the
 ;; regular expression "ab(bb|c)*".
 

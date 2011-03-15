@@ -37,12 +37,31 @@
 ;; Initial state. NFA: I = #{x,...}
 ;;                DFA: I = x
 
+
+(defn epsilon-closure
+  "Given an NFA's transition function (A map of states to maps of inputs to
+   states), and a state, returns the epsilon closure of that state."
+  [transitions state]
+  (loop [e-closure state] ;; Start with the state itself.
+    (let [e-reachable-states
+          (apply concat
+                 (filter #(not (nil? %))
+                         (map #(as-coll (get (transitions %) nil))
+                              e-closure)))
+          next-e-closure (into e-closure e-reachable-states)]
+      (if (= next-e-closure e-closure)
+        e-closure
+        (recur next-e-closure)))))
+
 ;; For an NFA:
 ;;   Transition function (Q -> (E -> P(Q))). Can return a state or
 ;;   a collection of states. *Make sure this is a map of states to a map of
 ;;   input symbols to state/state collection*.
 ;;   Initial state: A state or collection of states.
 ;;   Configuration: Collection of states & input sequence.
+;;
+;; An epsilon transition takes nil as input, but is otherwise like every other
+;; transition.
 (defrecord NFA [states ;; A collection of states
                 transitions ;; A transition function (see above).
                 initial-state ;; One of the identifiers in states.
