@@ -80,7 +80,8 @@
         ;; set/union on a bunch of smaller hash-sets.
         (Configuration.
          (apply hash-set
-                (apply concat (for [s state]
+                (apply concat (for [s (epsilon-closure (:transitions this)
+                                                       state)]
                                 (as-coll
                                  ((or ((:transitions this) s)
                                       (constantly nil)) (first input))))))
