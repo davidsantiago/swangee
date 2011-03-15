@@ -6,10 +6,10 @@
 ;; regular expression "ab(bb|c)*".
 
 (def test-nfa (swangee/nfa :states [:1 :2 :3]
-                           :transitions [{:1 {\a :2}
-                                          :2 {\b #{:3}}
-                                          :3 {\c :3
-                                              \b #{:2}}}]
+                           :transitions {:1 {\a :2}
+                                         :2 {\b #{:3}}
+                                         :3 {\c :3
+                                             \b #{:2}}}
                            :initial-state #{:1}
                            :accepting-states #{:3}))
 
