@@ -43,8 +43,7 @@
   (is (= #{:a :b :c :d}
          (epsilon-closure transitions-with-eps #{:a :b :c :d}))))
 
-;; For these tests, we use the simple language defined by the
-;; regular expression "ab(bb|c)*".
+;; See core_test.clj for the language being tested.
 
 (def test-nfa (nfa :states [:1 :2 :3]
                    :transitions {:1 {\a :2}

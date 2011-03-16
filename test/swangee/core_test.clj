@@ -6,6 +6,8 @@
 ;;
 ;; Core operations (FA-independent, actual tests in nfa/dfa tests)
 ;;
+;; For these tests, we use the simple language defined by the
+;; regular expression "ab(bb|c)*".
 
 (defmacro test-basic-run
   [fa]
