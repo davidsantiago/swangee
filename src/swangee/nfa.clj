@@ -7,7 +7,7 @@
   "Given an NFA's transition function (A map of states to maps of inputs to
    states), and a state, returns the epsilon closure of that state."
   [transitions state]
-  (loop [e-closure state] ;; Start with the state itself.
+  (loop [e-closure (into #{} (as-coll state))] ;; Start with the state itself.
     (let [e-reachable-states
           (apply concat
                  (filter #(not (nil? %))
