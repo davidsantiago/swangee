@@ -15,18 +15,33 @@
                            :d {nil #{:b :c}}})
 
 (deftest epsilon-closure-test
+    ;; Single states.
   (is (= #{:a :b :c}
-         (epsilon-closure transitions-with-eps
-                                  #{:a})))
+         (epsilon-closure transitions-with-eps :a)))
   (is (= #{:b :c}
-         (epsilon-closure transitions-with-eps
-                                  #{:b})))
+         (epsilon-closure transitions-with-eps :b)))
   (is (= #{:c}
-         (epsilon-closure transitions-with-eps
-                                  #{:c})))
+         (epsilon-closure transitions-with-eps :c)))
   (is (= #{:b :c :d}
-         (epsilon-closure transitions-with-eps
-                                  #{:d}))))
+         (epsilon-closure transitions-with-eps :d)))
+  ;; Single states as sets.
+  (is (= #{:a :b :c}
+         (epsilon-closure transitions-with-eps #{:a})))
+  (is (= #{:b :c}
+         (epsilon-closure transitions-with-eps #{:b})))
+  (is (= #{:c}
+         (epsilon-closure transitions-with-eps #{:c})))
+  (is (= #{:b :c :d}
+         (epsilon-closure transitions-with-eps #{:d})))
+  ;; Sets of states
+  (is (= #{:a :b :c}
+         (epsilon-closure transitions-with-eps #{:a :b})))
+  (is (= #{:b :c}
+         (epsilon-closure transitions-with-eps #{:b :c})))
+  (is (= #{:b :c :d}
+         (epsilon-closure transitions-with-eps #{:d})))
+  (is (= #{:a :b :c :d}
+         (epsilon-closure transitions-with-eps #{:a :b :c :d}))))
 
 ;; For these tests, we use the simple language defined by the
 ;; regular expression "ab(bb|c)*".
