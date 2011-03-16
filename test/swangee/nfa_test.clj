@@ -53,11 +53,35 @@
   (is (= (swangee/config #{} (seq "ddd"))
          (swangee/step test-nfa (swangee/config #{:1} "dddd")))))
 
-
-;;
-;; Core operation tests
-;;
-
+;; Run the core operations tests on this nfa.
 (test-basic-run test-nfa)
 (test-basic-match test-nfa)
 (test-complement test-nfa)
+
+;;
+;; Test an NFA with epsilon-transitions on the language a*b*c*.
+;;
+
+(def test-e-nfa (nfa :states [:q0 :q1 :q2]
+                     :transitions {:q0 {\a :q0
+                                        nil :q1}
+                                   :q1 {\b :q1
+                                        nil :q2}
+                                   :q2 {\c :q2}}
+                     :initial-state #{:q0}
+                     :accepting-states #{:q2}))
+
+(deftest simple-step-e-nfa
+  ;; Start at initial configuration and step once.
+  (is (= (swangee/config #{:q0} (seq "bc"))
+         (swangee/step test-e-nfa (swangee/config (:initial-state test-e-nfa)
+                                                  "abc"))))
+  (is (= (swangee/config #{:q1} (seq "c"))
+         (swangee/step test-e-nfa (swangee/config #{:q1}
+                                                  "bc"))))
+  (is (= (swangee/config #{:q2} '())
+         (swangee/step test-e-nfa (swangee/config #{:q2}
+                                                  "c")))))
+
+
+
