@@ -2,79 +2,9 @@
   (:use clojure.test)
   (:require [swangee.core :as swangee]))
 
-;; Test the espilon-closure function.
-
-(def transitions-with-eps {:a {\b :b
-                               nil :b}
-                           :b {\d :d
-                               \c :c
-                               nil #{:c}}
-                           :c {}
-                           :d {nil #{:b :c}}})
-
-(deftest epsilon-closure
-  (is (= #{:a :b :c}
-         (swangee/epsilon-closure transitions-with-eps
-                                  #{:a})))
-  (is (= #{:b :c}
-         (swangee/epsilon-closure transitions-with-eps
-                                  #{:b})))
-  (is (= #{:c}
-         (swangee/epsilon-closure transitions-with-eps
-                                  #{:c})))
-  (is (= #{:b :c :d}
-         (swangee/epsilon-closure transitions-with-eps
-                                  #{:d}))))
-
-
-;; For these tests, we use the simple language defined by the
-;; regular expression "ab(bb|c)*".
-
-(def test-nfa (swangee/nfa :states [:1 :2 :3]
-                           :transitions {:1 {\a :2}
-                                         :2 {\b #{:3}}
-                                         :3 {\c :3
-                                             \b #{:2}}}
-                           :initial-state #{:1}
-                           :accepting-states #{:3}))
-
-(deftest simple-step-nfa
-  ;; Start at initial configuration and step once.
-  (is (= (swangee/config #{:2} (seq "bccb"))
-         (swangee/step test-nfa (swangee/config (:initial-state test-nfa)
-                                                "abccb"))))
-  ;; Try another step.
-  (is (= (swangee/config #{:3} (seq "ccb"))
-         (swangee/step test-nfa (swangee/config #{:2}
-                                                "bccb"))))
-
-  ;; Undefined input.
-  (is (= (swangee/config #{} (seq "ddd"))
-         (swangee/step test-nfa (swangee/config #{:1} "dddd")))))
-
-;; Define the same FA as above, as a DFA.
-(def test-dfa (swangee/dfa :states {:1 (swangee/compiled-state {\a :2} false)
-                                    :2 (swangee/compiled-state {\b :3} false)
-                                    :3 (swangee/compiled-state {\c :3
-                                                                \b :2} true)}
-                           :initial-state :1))
-
-(deftest simple-step-dfa
-  ;; Start at initial configuration and step once.
-  (is (= (swangee/config :2 (seq "bccb"))
-         (swangee/step test-dfa (swangee/config (:initial-state test-dfa)
-                                                "abccb"))))
-
-  ;; Try another step.
-  (is (= (swangee/config :3 (seq "ccb"))
-         (swangee/step test-dfa (swangee/config :2 "bccb"))))
-
-  ;; Undefined input.
-  (is (= (swangee/config nil (seq "ddd"))
-         (swangee/step test-dfa (swangee/config :1 "dddd")))))
 
 ;;
-;; Core operations (FA-independent)
+;; Core operations (FA-independent, actual tests in nfa/dfa tests)
 ;;
 
 (defmacro test-basic-run
@@ -88,9 +18,6 @@
        ;; Basic run of entire string with characters not in any transition.
        (is (= false
               (swangee/run ~fa "abddcba"))))))
-
-(test-basic-run test-nfa)
-(test-basic-run test-dfa)
 
 (defmacro test-basic-match
   [fa]
@@ -112,9 +39,6 @@
        (is (= (seq "abccbbc"))
            (swangee/match ~fa "abccbbc")))))
 
-(test-basic-match test-nfa)
-(test-basic-match test-dfa)
-
 (defmacro test-complement
   [fa]
   (let [test-name (gensym "test-complement")]
@@ -130,8 +54,6 @@
        (is (= true
               (swangee/run (swangee/complement (swangee/complement ~fa))
                            "abccbb"))))))
-
-(test-complement test-nfa)
 
 
 
