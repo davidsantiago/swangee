@@ -71,3 +71,27 @@
           transitions
           initial-state
           (apply hash-set accepting-states))))
+
+;;
+;; NFA-specific operations
+;;
+
+(defn move-nfa
+  "Given a set of states, returns the set of states that can possibly be reached
+   by consuming the given input symbol. Note that epsilon (nil) doesn't count
+   as an input symbol here."
+  [nfa state-set input]
+  (apply hash-set
+         (apply concat (map #(as-coll (get ((:transitions nfa) %) input))
+                            (epsilon-closure (:transitions nfa)
+                                             state-set)))))
+
+(defn outgoing-symbols
+  "Given an nfa and a set of states, returns the set of input symbols that
+   have transitions defined. Note that epsilon (nil) doesn't count as an
+   input symbol here."
+  [nfa state-set]
+  (apply hash-set
+         (apply concat (for [state state-set]
+                         (filter #(not (nil? %))
+                                 (keys ((:transitions nfa) state)))))))
