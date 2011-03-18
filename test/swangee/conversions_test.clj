@@ -1,17 +1,16 @@
 (ns swangee.conversions-test
   (:use clojure.test
         swangee.core-test
-        [swangee nfa dfa conversions])
+        [swangee test-automata-defs nfa dfa conversions])
   (:require [swangee.core :as swangee]))
 
-(def test-nfa (nfa :states [:1 :2 :3]
-                   :transitions {:1 {\a :2}
-                                 :2 {\b #{:3}}
-                                 :3 {\c :3
-                                     \b #{:2}}}
-                   :initial-state #{:1}
-                   :accepting-states #{:3}))
+;;
+;; Test determinization of an NFA.
+;;
+(test-basic-run (determinize lang1-nfa) lang1-strings not-lang1-strings)
+(test-basic-run (determinize lang2-nfa) lang2-strings not-lang2-strings)
+(test-basic-run (determinize lang3-nfa) lang3-strings not-lang3-strings)
 
-(deftest determinize-test
-  (is (= (swangee/run test-nfa "abccbb")
-         (swangee/run (determinize test-nfa) "abccbb"))))
+(test-basic-match (determinize lang1-nfa) lang1-string-matches)
+(test-basic-match (determinize lang2-nfa) lang2-string-matches)
+(test-basic-match (determinize lang3-nfa) lang3-string-matches)
