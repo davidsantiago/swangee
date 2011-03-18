@@ -23,7 +23,9 @@
 (def lang1-strings ["abccbb" "ab" "abc" "abbb" "abbbccc" "abccbb"])
 (def not-lang1-strings ["a" "b" "aba" "abac" "abbc" "abbbb" "abbcb"
                         "abbbbccc" "abddcba" "dfa"])
-(def lang1-string-matches [["abcd" (seq "abc")]
+(def lang1-string-matches [["" []]
+                           ["adbc" []]
+                           ["abcd" (seq "abc")]
                            ["dbbabc" []]
                            ["ab" (seq "ab")]
                            ["abccbb" (seq "abccbb")]

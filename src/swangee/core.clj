@@ -54,26 +54,23 @@
           (recur next-cfg)))))) ;; Still have input, so recur.
 
 (defn match
-  "Given a FiniteAutomaton and an input sequence, return the longest string matched
-   starting on the first character of the string."
+  "Given a FiniteAutomaton and an input sequence, return the longest string
+   matched starting on the first character of the string."
   [^FiniteAutomaton fa input]
-  (loop [curr-cfg (config (initial-state fa)
-                          input)
-         symbols-seen [(first input)]
+  (loop [curr-cfg (config (initial-state fa) input)
+         symbols-seen []
          longest-match []]
-    (let [next-cfg (step fa curr-cfg)]
-      (if (not (valid-state? fa (:state next-cfg))) ;; No route to acceptance...
+    (if (not (valid-state? fa (:state curr-cfg)))
+      longest-match ;; No route to acceptance, just return longest-match.
+      ;; The state is valid, so process further.
+      (if (empty? (:input curr-cfg))
         longest-match
-        (if (empty? (:input next-cfg)) ;; Out of input, return depends on state.
-          (if (accepting-state? fa (:state next-cfg)) ;; If we are in accepting state,
-            (conj longest-match (first (:input curr-cfg))) ;; Add last input we saw and return.
-            ;; Otherwise, we are out of input but not in accepting, state...
-            longest-match)
-          ;; Not out of input, so continue...
+        ;; Not out of input, so continue...
+        (let [next-cfg (step fa curr-cfg)
+              next-symbols-seen (conj symbols-seen (first (:input curr-cfg)))]
           (recur next-cfg
-                 (conj symbols-seen (first (:input next-cfg)))
-                 ;; Only set longest-match to symbols seen if we're in accepting state.
+                 next-symbols-seen
+                 ;; Only add to longest-match if we are in an accepting state.
                  (if (accepting-state? fa (:state next-cfg))
-                   symbols-seen
+                   next-symbols-seen
                    longest-match)))))))
-
