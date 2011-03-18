@@ -82,7 +82,13 @@
 
 ;; Run the core operations tests on this nfa.
 (test-basic-run lang1-nfa lang1-strings not-lang1-strings)
+(test-basic-run lang2-nfa lang2-strings not-lang2-strings)
+(test-basic-run lang3-nfa lang3-strings not-lang3-strings)
+
 (test-basic-match lang1-nfa lang1-string-matches)
+(test-basic-match lang2-nfa lang2-string-matches)
+(test-basic-match lang3-nfa lang3-string-matches)
+
 (test-complement lang1-nfa)
 
 ;;

@@ -46,6 +46,13 @@
 
 (def lang2-strings ["" "a" "b" "c" "aa" "bb" "cc" "abc" "aabbc" "aabbcc"])
 (def not-lang2-strings ["aba" "abac" "dfa" "cccb"])
+(def lang2-string-matches [["" []]
+                           ["a" (seq "a")]
+                           ["abbd" (seq "abb")]
+                           ["abc" (seq "abc")]
+                           ["babc" (seq "b")]
+                           ["dfa" []]
+                           ["cccp" (seq "ccc")]])
 
 ;;
 ;; Language 3
@@ -63,5 +70,12 @@
                     :initial-state #{:1}
                     :accepting-states #{:6}))
 
-(def lang3-strings ["a" "b" "aa" "bb" "ba" "ab" "bbba" "aaaab"])
-(def not-lang3-strings ["baa" "bab" "aaabb" "aba" "dfa"])
+(def lang3-strings ["a" "b" "ba" "ab" "bbba" "aaaab"])
+(def not-lang3-strings ["aa" "bb" "baa" "bab" "aaabb" "aba" "dfa"])
+(def lang3-string-matches [["" []]
+                           ["a" (seq "a")]
+                           ["aa" (seq "a")]
+                           ["bb" (seq "b")]
+                           ["baa" (seq "ba")]
+                           ["aaabb" (seq "aaab")]
+                           ["dfa" []]])
