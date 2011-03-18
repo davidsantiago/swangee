@@ -22,4 +22,9 @@
 ;; Core operations tests.
 ;;
 (test-basic-run lang1-dfa lang1-strings not-lang1-strings)
+(test-basic-run lang2-dfa lang2-strings not-lang2-strings)
+(test-basic-run lang3-dfa lang3-strings not-lang3-strings)
+
 (test-basic-match lang1-dfa lang1-string-matches)
+(test-basic-match lang2-dfa lang2-string-matches)
+(test-basic-match lang3-dfa lang3-string-matches)
