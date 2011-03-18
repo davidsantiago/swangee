@@ -42,16 +42,14 @@
 ;;
 
 (defn run
-  "Given a FiniteAutomaton and an input sequence, returns true (accept) or false."
+  "Given a FiniteAutomaton and an input sequence, return true (accept) or false."
   [^FiniteAutomaton fa input]
-  (loop [curr-cfg (config (initial-state fa)
-                          input)]
-    (let [next-cfg (step fa curr-cfg)]
-      (if (not (valid-state? fa (:state next-cfg))) ;; Was no valid transition...
-        false
-        (if (empty? (:input next-cfg)) ;; Ran out of input, return based on final state.
-          (accepting-state? fa (:state next-cfg))
-          (recur next-cfg)))))) ;; Still have input, so recur.
+  (loop [curr-cfg (config (initial-state fa) input)]
+    (if (not (valid-state? fa (:state curr-cfg))) ;; Was not a valid transition
+      false
+      (if (empty? (:input curr-cfg)) ;; Ran out of input, return on final state.
+        (accepting-state? fa (:state curr-cfg))
+        (recur (step fa curr-cfg)))))) ;; Still have input, so recur.
 
 (defn match
   "Given a FiniteAutomaton and an input sequence, return the longest string
