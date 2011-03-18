@@ -10,36 +10,26 @@
 ;; regular expression "ab(bb|c)*".
 
 (defmacro test-basic-run
-  [fa]
+  [fa accepted-strings rejected-strings]
   (let [test-name (gensym "basic-run")]
     `(deftest ~test-name
-       ;; Basic run of entire string expecting success
-       (is (= true
-              (swangee/run ~fa "abccbb")))
+       ;; Basic run of entire string expecting success.
+       (doseq [s# ~accepted-strings]
+         (is (= true
+                (swangee/run ~fa s#))))
 
-       ;; Basic run of entire string with characters not in any transition.
-       (is (= false
-              (swangee/run ~fa "abddcba"))))))
+       ;; Basic run of entire string that is not in the language.
+       (doseq [s# ~rejected-strings]
+         (is (= false
+                (swangee/run ~fa s#)))))))
 
 (defmacro test-basic-match
-  [fa]
+  [fa string-matches] ;; string-matches seq of pairs of strings and matches.
   (let [test-name (gensym "basic-match")]
     `(deftest ~test-name
-       ;; Basic match of string prefix expecting success
-       (is (= (seq "abc")
-              (swangee/match ~fa "abcd")))
-
-       ;; Basic match of string prefix expecting failure
-       (is (= []
-                (swangee/match ~fa "dbbabc")))
-
-       ;; Basic match of string prefix consuming entire string
-       (is (= (seq "abccbb"))
-           (swangee/match ~fa "abccbb"))
-
-       ;; Basic match of string with multiple matches
-       (is (= (seq "abccbbc"))
-           (swangee/match ~fa "abccbbc")))))
+       (doseq [[string# match#] ~string-matches]
+         (is (= match#
+                (swangee/match ~fa string#)))))))
 
 (defmacro test-complement
   [fa]
