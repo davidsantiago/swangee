@@ -84,7 +84,7 @@
    by consuming the given input symbol. Note that epsilon (nil) doesn't count
    as an input symbol here."
   [nfa state-set input]
-  (apply hash-set
+  (into #{}
          (apply concat (map #(as-coll (get ((:transitions nfa) %) input))
                             (epsilon-closure (:transitions nfa)
                                              state-set)))))
@@ -94,7 +94,7 @@
    have transitions defined. Note that epsilon (nil) doesn't count as an
    input symbol here."
   [nfa state-set]
-  (apply hash-set
+  (into #{}
          (apply concat (for [state state-set]
                          (filter #(not (nil? %))
                                  (keys ((:transitions nfa) state)))))))
