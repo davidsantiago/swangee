@@ -34,10 +34,13 @@
   FiniteAutomaton
   (initial-state [this] (:initial-state this))
   (accepting-state? [this state]
-                    (not (empty? (set/intersection state
-                                                   (:accepting-states this)))))
-  (valid-state? [this state] (not (empty? (set/intersection state
-                                                            (:states this)))))
+                    (not (empty? (set/intersection
+                                  (epsilon-closure (:transitions this) state)
+                                  (:accepting-states this)))))
+  (valid-state? [this state]
+                (not (empty? (set/intersection
+                              (epsilon-closure (:transitions this) state)
+                              (:states this)))))
   (step [this {:keys [state input]}]
         ;; Have to apply transition to every primitive state in the state, then
         ;; apply all of those to the input symbol, collecting the answer states
