@@ -6,7 +6,7 @@
 
 (defn determinize
   "Converts the given NFA into a DFA using Buchi's (subset construction)
-   algorithm. For example, see
+   algorithm. For example, see Aho, Sethi & Ullman Algorithm 3.2 or
    http://web.cecs.pdx.edu/~harry/compilers/slides/LexicalPart3.pdf"
   [nfa]
   ;; First save the "name" (a set of nfa states) of the initial state
